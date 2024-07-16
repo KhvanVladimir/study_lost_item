@@ -38,6 +38,18 @@ public class UserDetail implements UserDetails{
 	
 	@Column(name = "role")
 	String role;
+	
+	@Column(name = "phone")
+	String phone;
+	
+	@Column(name = "email")
+	String email;
+	
+	@Column(name = "age")
+	String age;
+	
+	@Column(name = "gender")
+	String gender;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

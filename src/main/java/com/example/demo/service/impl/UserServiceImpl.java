@@ -1,5 +1,8 @@
 package com.example.demo.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,10 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.UserDetail;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService{
+public class UserServiceImpl implements UserDetailsService{
 
 	@Autowired
 	UserRepository userRepository;
@@ -31,6 +33,25 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 	            user.isAccountNonLocked(),
 	            user.getAuthorities());
 	}
+
+	public List<UserDetail> findAll() {
+		return userRepository.findAll();
+	}
+
+	public Optional<UserDetail> findById(Long id) {
+		return userRepository.findById(id);
+	}
+
+	public UserDetail save(UserDetail user) {
+		return userRepository.saveAndFlush(user);
+	}
+
+	public void deleteById(Long id) {
+		userRepository.deleteById(id);
+	}
+	
+	
+	
 	
 	
 	
