@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.DTO.UserDTO;
 import com.example.demo.entity.UserDetail;
 import com.example.demo.service.impl.UserServiceImpl;
 
@@ -23,33 +25,32 @@ public class UserController {
 	UserServiceImpl userService;
 	
     @GetMapping
-    public List<UserDetail> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public UserDetail getUserById(@PathVariable(name="id", required = true) Long id) {
-        return userService.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+    public UserDTO getUserById(@PathVariable(name="id", required = true) Long id) {
+    	UserDTO res = userService.findById(id);
+        if(res == null) {
+        	throw new RuntimeException("User not found with id " + id);
+        }
+        return res;
     }
 
     @PostMapping
-    public UserDetail createUser(@RequestBody UserDetail user) {
+    public UserDTO createUser(@RequestBody UserDTO user) {
         return userService.save(user);
     }
 
     @PutMapping("/{id}")
-    public UserDetail updateUser(@PathVariable(name="id", required = true) Long id, @RequestBody UserDetail userDetails) {
-    	UserDetail user = userService.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
-    	user.setAge(userDetails.getAge() != null ? userDetails.getAge() : user.getAge());
-    	user.setEmail(userDetails.getEmail() != null ? userDetails.getEmail() : user.getEmail());
-    	user.setGender(userDetails.getGender() != null ? userDetails.getGender() : user.getGender()); // haha
-    	user.setPassword(userDetails.getPassword() != null ? userDetails.getPassword() : user.getPassword());
-    	user.setPhone(userDetails.getPhone() != null ? userDetails.getPhone() : user.getPhone());
-    	user.setUsername(userDetails.getUsername() != null ? userDetails.getUsername() : user.getUsername());
-    	
-        return userService.save(user);
+    public UserDTO updateUser(@PathVariable(name="id", required = true) Long id, @RequestBody UserDTO userDetails) {
+    	Optional<UserDetail> user = userService.findUserDetailById(id);   
+    	if(user.isEmpty()) {
+        	throw new RuntimeException("User not found with id " + id);
+    	}
+    	return userService.changeUserDetail(user.get(), userDetails);
+         
     }
 
     @DeleteMapping("/{id}")
